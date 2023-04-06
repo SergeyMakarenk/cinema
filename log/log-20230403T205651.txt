@@ -1,0 +1,2 @@
+15257 [main] INFO  c.m.main.servise.PersonServiseImp - Создан пользователь Lena
+27656 [main] INFO  c.m.m.controller.PersonController - Пользователь Lena вышел из приложения
