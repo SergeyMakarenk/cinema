@@ -7,7 +7,6 @@ import com.makarenko.main.repository.PersonRepository;
 import com.makarenko.main.repository.PersonRepositoryImp;
 import com.makarenko.main.util.ProcessStepFromUser;
 import lombok.extern.slf4j.Slf4j;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -20,13 +19,10 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
     private final TicketServise ticketServise = new TicketServiseImp();
     private final static Scanner scanner = new Scanner(System.in);
     private int choiseUser;
-    private final SecureRandom random = new SecureRandom();
 
     @Override
     public Person createPerson() {
         String username = SPACING;
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
         while (true) {
             System.out.print(CREATE_PERSON_ENTER_LOGIN);
             Pattern pattern = Pattern.compile(CREATE_PERSON_PATTERN_LOGIN);
@@ -40,12 +36,10 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
         System.out.print(CREATE_PERSON_ENTER_PASSWORD);
         Pattern pattern1 = Pattern.compile(CREATE_PERSON_PATTERN_PASSWORD);
         String password = ProcessStepFromUser.checkStepUserWithRegex(pattern1);
-
         System.out.print(CREATE_PERSON_ENTER_AGE);
         int age = ProcessStepFromUser.returnStep(ZERO, HUNDRED);
         Person person = new Person(username, password, age);
         person.setRole(RoleOfPerson.USER.getTranslation());
-        person.setSalt(salt);
         personRepository.createPerson(person);
         log.info(LOG_PERSON_CREATE + person.getUsername());
         System.out.println(CREATE_PERSON_SUCCESS);

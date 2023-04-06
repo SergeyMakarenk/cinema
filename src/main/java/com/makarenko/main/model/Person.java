@@ -6,11 +6,7 @@ public class Person {
     private String password;
     private int age;
     private String role;
-    private byte[] salt;
 
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
-    }
 
     public Integer getId() {
         return id;
