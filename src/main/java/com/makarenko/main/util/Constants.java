@@ -15,6 +15,7 @@ public final class Constants {
     public static final int TEN = 10;
     public static final int TWELVE = 12;
     public static final int FOURTEEN = 14;
+    public static final int SIXTEEN = 16;
     public static final int EIGHTEEN = 18;
     public static final int TWENTY_ONE = 21;
     public static final int TWENTY_FIVE = 25;
@@ -200,14 +201,15 @@ public final class Constants {
     public static final String MOVE_REPOSITORY_COMMAND_4 = "UPDATE movie SET name_movie=?, age_limit=?, date_time=? WHERE id=?";
     public static final String MOVE_REPOSITORY_COMMAND_5 = "DELETE FROM movie WHERE id = ?";
     public static final String MOVE_REPOSITORY_COMMAND_6 = "SELECT * FROM movie WHERE id=?";
-    public static final String PERSON_REPOSITORY_COMMAND_1 = "INSERT INTO person(username, password, age, role)VALUES (?, ?, ?, ?)";
+    public static final String PERSON_REPOSITORY_COMMAND_1 = "INSERT INTO person(username, password, age, role, salt)VALUES (?, ?, ?, ?, ?)";
     public static final String PERSON_REPOSITORY_COMMAND_2 = "SELECT * FROM person";
     public static final String PERSON_REPOSITORY_NAME = "username";
     public static final String PERSON_REPOSITORY_PASSWORD = "password";
     public static final String PERSON_REPOSITORY_AGE = "age";
     public static final String PERSON_REPOSITORY_ROLE = "role";
+    public static final String PERSON_REPOSITORY_SALT = "salt";
     public static final String PERSON_REPOSITORY_COMMAND_3 = "SELECT * FROM person WHERE username = ?";
-    public static final String PERSON_REPOSITORY_COMMAND_4 = "UPDATE person SET username=?, password=?, age=?, role=? WHERE id=?";
+    public static final String PERSON_REPOSITORY_COMMAND_4 = "UPDATE person SET username=?, password=?, age=?, role=?, salt=? WHERE id=?";
     public static final String PERSON_REPOSITORY_COMMAND_5 = "DELETE FROM person WHERE id = ?";
     public static final String TICKET_REPOSITORY_COMMAND_1 = "INSERT INTO ticket(id_movie, place, price)VALUES (?, ?, ?)";
     public static final String TICKET_REPOSITORY_COMMAND_2 = "DELETE FROM ticket WHERE id_movie = ?";
@@ -224,6 +226,9 @@ public final class Constants {
     public static final String CONNECTION_PASSWORD_KEY = "db.password";
     public static final String CONNECTION_DRIVER = "com.mysql.jdbc.Driver";
     public static final String CONNECTION_ERROR = "Ошибка загрузки драйвера";
+    public static final String PASSWORD_ALGORITM = "PBKDF2WithHmacSHA1";
+    public static final int PASSWORD_ITER = 65536;
+    public static final int PASSWORD_HARD = 128;
     public static final String PROPERTIES_APP = "application.properties";
     public static final String WELCOME_ALL = """
             Добро пожаловать в онлайн-кинотеатр!

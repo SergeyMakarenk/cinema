@@ -20,9 +20,10 @@ public class PersonRepositoryImp implements PersonRepository {
             PreparedStatement statement =
                     connection.prepareStatement(PERSON_REPOSITORY_COMMAND_1);
             statement.setString(ONE, person.getUsername());
-            statement.setString(TWO, person.getPassword());
+            statement.setBytes(TWO, person.getPassword());
             statement.setInt(THREE, person.getAge());
             statement.setString(FOUR, person.getRole());
+            statement.setBytes(FIVE, person.getSalt());
             statement.execute();
             return true;
         } catch (SQLException e) {
@@ -41,10 +42,11 @@ public class PersonRepositoryImp implements PersonRepository {
             while(resultSet.next()){
                 int id = resultSet.getInt(MOVE_REPOSITORY_ID);
                 String username = resultSet.getString(PERSON_REPOSITORY_NAME);
-                String password = resultSet.getString(PERSON_REPOSITORY_PASSWORD);
+                byte[] password = resultSet.getBytes(PERSON_REPOSITORY_PASSWORD);
                 int age = resultSet.getInt(PERSON_REPOSITORY_AGE);
                 String role = resultSet.getString(PERSON_REPOSITORY_ROLE);
-                Person person = new Person(id, username, password, age, role);
+                byte[] salt = resultSet.getBytes(PERSON_REPOSITORY_SALT);
+                Person person = new Person(id, username, password, age, role, salt);
                 persons.add(person);
             }
         } catch (SQLException e) {
@@ -62,10 +64,11 @@ public class PersonRepositoryImp implements PersonRepository {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()){
                 int id = resultSet.getInt(MOVE_REPOSITORY_ID);
-                String password = resultSet.getString(PERSON_REPOSITORY_PASSWORD);
+                byte[] password = resultSet.getBytes(PERSON_REPOSITORY_PASSWORD);
                 int age = resultSet.getInt(PERSON_REPOSITORY_AGE);
                 String role = resultSet.getString(PERSON_REPOSITORY_ROLE);
-                return new Person(id, username, password, age, role);
+                byte[] salt = resultSet.getBytes(PERSON_REPOSITORY_SALT);
+                return new Person(id, username, password, age, role, salt);
             }
         } catch (SQLException e) {
             log.warn(LOG_GET_PERSON_ERROR + username + SPACING + e);
@@ -80,10 +83,11 @@ public class PersonRepositoryImp implements PersonRepository {
             PreparedStatement statement =
                     connection.prepareStatement(PERSON_REPOSITORY_COMMAND_4);
             statement.setString(ONE, person.getUsername());
-            statement.setString(TWO, person.getPassword());
+            statement.setBytes(TWO, person.getPassword());
             statement.setInt(THREE, person.getAge());
             statement.setString(FOUR, person.getRole());
-            statement.setInt(FIVE, id);
+            statement.setBytes(FIVE, person.getSalt());
+            statement.setInt(SIX, id);
             statement.execute();
             return true;
         } catch (SQLException e) {

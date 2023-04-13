@@ -3,10 +3,18 @@ package com.makarenko.main.model;
 public class Person {
     private Integer id;
     private String username;
-    private String password;
+    private byte[] password;
     private int age;
     private String role;
+    private byte[] salt;
 
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
 
     public Integer getId() {
         return id;
@@ -24,11 +32,11 @@ public class Person {
         this.username = username;
     }
 
-    public String getPassword() {
+    public byte[] getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(byte[] password) {
         this.password = password;
     }
 
@@ -48,24 +56,26 @@ public class Person {
         this.role = role;
     }
 
-    public Person(String username, String password, int age) {
+    public Person(String username, byte[] password, int age) {
         this.username = username;
         this.password = password;
         this.age = age;
     }
 
-    public Person(Integer id, String username, String password, int age, String role) {
+    public Person(Integer id, String username, byte[] password, int age, String role, byte[] salt) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.age = age;
         this.role = role;
+        this.salt = salt;
     }
 
-    public Person(String username, String password, int age, String role) {
+    public Person(String username, byte[] password, int age, String role, byte[] salt) {
         this.username = username;
         this.password = password;
         this.age = age;
         this.role = role;
+        this.salt = salt;
     }
 }

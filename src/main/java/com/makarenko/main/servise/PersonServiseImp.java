@@ -7,6 +7,9 @@ import com.makarenko.main.repository.PersonRepository;
 import com.makarenko.main.repository.PersonRepositoryImp;
 import com.makarenko.main.util.ProcessStepFromUser;
 import lombok.extern.slf4j.Slf4j;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -18,6 +21,7 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
     private final MovieServise movieServise = new MovieServiseImp();
     private final TicketServise ticketServise = new TicketServiseImp();
     private final static Scanner scanner = new Scanner(System.in);
+    private final PasswordService passwordService = new PasswordService();
     private int choiseUser;
 
     @Override
@@ -35,10 +39,20 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
         }
         System.out.print(CREATE_PERSON_ENTER_PASSWORD);
         Pattern pattern1 = Pattern.compile(CREATE_PERSON_PATTERN_PASSWORD);
-        String password = ProcessStepFromUser.checkStepUserWithRegex(pattern1);
+        String passwordString = ProcessStepFromUser.checkStepUserWithRegex(pattern1);
         System.out.print(CREATE_PERSON_ENTER_AGE);
         int age = ProcessStepFromUser.returnStep(ZERO, HUNDRED);
+        byte[] salt = passwordService.generateSalt();
+        byte[] password;
+        try {
+            password = passwordService.getHashPassword(passwordString, salt);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
         Person person = new Person(username, password, age);
+        person.setSalt(salt);
         person.setRole(RoleOfPerson.USER.getTranslation());
         personRepository.createPerson(person);
         log.info(LOG_PERSON_CREATE + person.getUsername());
@@ -49,7 +63,7 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
     @Override
     public Person getPerson() {
         String username = SPACING;
-        String password = SPACING;
+        String passwordString = SPACING;
         while (true) {
             System.out.print(GET_PERSON_ENTER_LOGIN);
             username = scanner.nextLine();
@@ -65,15 +79,23 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
         Person person = personRepository.getPersonByUsername(username);
         while (true) {
             System.out.print(GET_PERSON_ENTER_PASSWORD);
-            password = scanner.nextLine();
-            if (password.equals(ZERO1)) {
+            passwordString = scanner.nextLine();
+            if (passwordString.equals(ZERO1)) {
                 return null;
-            } else if (password.equals(person.getPassword())) {
-                log.info(LOG_USER +person.getUsername()+ LOG_PERSON_ENTER);
-                System.out.println(GET_PERSON_ENTER_SUCCESS);
-                return person;
             } else {
-                System.out.println(GET_PERSON_ENTER_WRONG);
+                try {
+                    if (passwordService.checkPassword(passwordString, person.getPassword(), person.getSalt())) {
+                        log.info(LOG_USER +person.getUsername()+ LOG_PERSON_ENTER);
+                        System.out.println(GET_PERSON_ENTER_SUCCESS);
+                        return person;
+                    } else {
+                        System.out.println(GET_PERSON_ENTER_WRONG);
+                    }
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                } catch (InvalidKeySpecException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -197,7 +219,8 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
 
     private boolean redactPersonByAdmin() {
         String username = SPACING;
-        String password = SPACING;
+        byte[] password = null;
+        byte[] salt = null;
         int age = ZERO;
         String role = SPACING;
         List<Person> persons = personRepository.getAllPersons();
@@ -214,6 +237,7 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
                     password = person.getPassword();
                     age = person.getAge();
                     role = person.getRole();
+                    salt = person.getSalt();
                 }
             }
             System.out.println(REDACT_ROLE_CURTAIN + username + DASH + role);
@@ -225,7 +249,7 @@ public class PersonServiseImp implements PersonServise, PersonAdminServise {
                 case THREE -> RoleOfPerson.ADMIN.getTranslation();
                 default -> role;
             };
-            Person person = new Person(username, password, age, role);
+            Person person = new Person(username, password, age, role, salt);
             personRepository.updatePerson(person, choiseUser);
             log.info(LOG_USER +username+ LOG_GET_ROLE +role);
             System.out.println(REDACT_ROLE_SUCCESS);

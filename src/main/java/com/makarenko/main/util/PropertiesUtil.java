@@ -3,7 +3,6 @@ package com.makarenko.main.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import static com.makarenko.main.util.Constants.PROPERTIES_APP;
 
 public class PropertiesUtil {
